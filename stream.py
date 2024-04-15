@@ -134,7 +134,7 @@ st.title('Options Strategy Visualizer')
 
 # API data fetch
 API_KEY = st.secrets["API_KEY"]
-symbols = ["AAPL", "MSFT", "GOOGL", "AMZN"]
+symbols = ["AAPL", "MSFT", "GOOGL", "AMZN","SPY", "QQQ", "DIA", "META", "NFLX", "NVDA", "TSLA", "AMD"]
 selected_symbol = st.selectbox("Select Stock Symbol", symbols)
 
 if st.button("Fetch Data"):
