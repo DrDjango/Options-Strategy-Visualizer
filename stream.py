@@ -21,7 +21,8 @@ def get_stock_data(symbol, API_KEY):
     for date, values in data.items():
         row = {'Date': date, 'Open': float(values['1. open']), 'High': float(values['2. high']),
                'Low': float(values['3. low']), 'Close': float(values['4. close'])}
-        df = df.concat(row, ignore_index=True)
+        # Correctly use pd.concat to add the new row
+        df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
     
     df['Date'] = pd.to_datetime(df['Date'])
     df.sort_values('Date', inplace=True)
