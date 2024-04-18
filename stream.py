@@ -271,8 +271,8 @@ elif strategy == "Iron Condor":
 # Common plot settings
 ax.plot(asset_prices, payoffs, label=strategy_label)
 ax.axhline(0, color='grey', lw=1)
-ax.set_xlabel('Stock Price (USD)')
-ax.set_ylabel('Profit / Loss (USD)')
+ax.set_xlabel('Stock Price (USD) x 100')
+ax.set_ylabel('Profit / Loss (USD) x 100')
 ax.set_title(f'{strategy} Payoff at Different Prices')
 
 # Shading for profit/loss based on the strategy
