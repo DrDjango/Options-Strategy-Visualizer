@@ -21,8 +21,7 @@ def get_stock_data(symbol, API_KEY):
     for date, values in data.items():
         row = {'Date': date, 'Open': float(values['1. open']), 'High': float(values['2. high']),
                'Low': float(values['3. low']), 'Close': float(values['4. close'])}
-        # Correctly use pd.concat to add the new row
-        df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+        df = df.concat(row, ignore_index=True)
     
     df['Date'] = pd.to_datetime(df['Date'])
     df.sort_values('Date', inplace=True)
@@ -134,7 +133,7 @@ st.title('Options Strategy Visualizer')
 
 # API data fetch
 API_KEY = st.secrets["API_KEY"]
-symbols = ["AAPL", "MSFT", "GOOGL", "AMZN","SPY", "QQQ", "DIA", "META", "NFLX", "NVDA", "TSLA", "AMD"]
+symbols = ["AAPL", "MSFT", "GOOGL", "AMZN", "SPY", "QQQ", "DIA", "META", "NFLX", "NVDA", "TSLA", "AMD"]
 selected_symbol = st.selectbox("Select Stock Symbol", symbols)
 
 if st.button("Fetch Data"):
@@ -174,27 +173,27 @@ elif strategy == "Bull Put Spread":
 # Inputs specific to Protective Collar
 elif strategy == "Protective Collar":
     purchase_price = st.number_input('Purchase Price of Underlying Asset', value=100.0, key='purchase_price_collar')
-    strike_price_put = st.number_input('Strike Price for Long Put', min_value=0, value=90, key='strike_price_put')
+    strike_price_put = st.number_input('Strike Price for Long Put', min_value=0, value=95, key='strike_price_put')
     premium_put = st.number_input('Premium for Long Put', min_value=0.0, value=5.0, key='premium_put')
     strike_price_call = st.number_input('Strike Price for Short Call', min_value=0, value=110, key='strike_price_call')
     premium_call = st.number_input('Premium for Short Call', min_value=0.0, value=5.0, key='premium_call')
 elif strategy == "Long Call Butterfly Spread":
     # For Long Call Butterfly Spread, we need three strike prices and three premiums
     strike_price_low = st.number_input('Strike Price for Low Call', min_value=0, value=90, key='strike_price_low')
-    premium_low = st.number_input('Premium for Low Call', min_value=0.0, value=5.0, key='premium_low')
+    premium_low = st.number_input('Premium for Low Call', min_value=0.0, value=3.0, key='premium_low')
     strike_price_mid = st.number_input('Strike Price for Mid Call', min_value=0, value=100, key='strike_price_mid')
-    premium_mid = st.number_input('Premium for Mid Call', min_value=0.0, value=10.0, key='premium_mid')
+    premium_mid = st.number_input('Premium for Mid Call', min_value=0.0, value=4.0, key='premium_mid')
     strike_price_high = st.number_input('Strike Price for High Call', min_value=0, value=110, key='strike_price_high')
-    premium_high = st.number_input('Premium for High Call', min_value=0.0, value=5.0, key='premium_high')
+    premium_high = st.number_input('Premium for High Call', min_value=0.0, value=8.0, key='premium_high')
 # Inputs specific to Iron Butterfly
 elif strategy == "Iron Butterfly":
     # For an Iron Butterfly, we need the strike price and premiums for the ATM options and the OTM put and call
     strike_price_atm = st.number_input('Strike Price for ATM Options', min_value=0, value=100, key='strike_price_atm')
     premium_atm = st.number_input('Premium for ATM Options', min_value=0.0, value=10.0, key='premium_atm')
     strike_price_otm_put = st.number_input('Strike Price for OTM Put', min_value=0, value=90, key='strike_price_otm_put')
-    premium_otm_put = st.number_input('Premium for OTM Put', min_value=0.0, value=2.0, key='premium_otm_put')
+    premium_otm_put = st.number_input('Premium for OTM Put', min_value=0.0, value=10.0, key='premium_otm_put')
     strike_price_otm_call = st.number_input('Strike Price for OTM Call', min_value=0, value=110, key='strike_price_otm_call')
-    premium_otm_call = st.number_input('Premium for OTM Call', min_value=0.0, value=2.0, key='premium_otm_call')
+    premium_otm_call = st.number_input('Premium for OTM Call', min_value=0.0, value=3.0, key='premium_otm_call')
     # Inputs specific to Iron Condor
 elif strategy == "Iron Condor":
     strike_price_put_buy = st.number_input('Strike Price for Buy Put', min_value=0, value=80, key='strike_price_put_buy')
@@ -219,40 +218,40 @@ payoffs = np.zeros_like(asset_prices)
 
 # Calculate payoffs for each strategy
 if strategy == "Call":
-    payoffs = 10 * calculate_call_payoff(asset_prices, strike_price, premium)
+    payoffs = 100 * calculate_call_payoff(asset_prices, strike_price, premium)
     strategy_label = 'Long Call Payoff'
 elif strategy == "Put":
-    payoffs = 10 * calculate_put_payoff(asset_prices, strike_price, premium)
+    payoffs = 100 * calculate_put_payoff(asset_prices, strike_price, premium)
     strategy_label = 'Long Put Payoff'
 elif strategy == "Straddle":
-    payoffs = 10 * calculate_straddle_payoff(asset_prices, strike_price, premium)
+    payoffs = 100 * calculate_straddle_payoff(asset_prices, strike_price, premium)
     strategy_label = 'Straddle Payoff'
     break_even_up = strike_price + premium
     break_even_down = strike_price - premium
 elif strategy == "Covered Call":
-    payoffs = 10 * calculate_covered_call_payoff(asset_prices, purchase_price, strike_price, premium)
+    payoffs = 100 * calculate_covered_call_payoff(asset_prices, purchase_price, strike_price, premium)
     strategy_label = 'Covered Call Payoff'
 elif strategy == "Married Put":
-    payoffs = 10 * calculate_married_put_payoff(asset_prices, purchase_price, strike_price, premium_paid)
+    payoffs = 100 * calculate_married_put_payoff(asset_prices, purchase_price, strike_price, premium_paid)
     strategy_label = 'Married Put Payoff'
 elif strategy == "Bull Call Spread":
-    payoffs = 10 * calculate_bull_call_spread_payoff(asset_prices, strike_price_long_call, strike_price_short_call, premium_long_call, premium_short_call)
+    payoffs = 100 * calculate_bull_call_spread_payoff(asset_prices, strike_price_long_call, strike_price_short_call, premium_long_call, premium_short_call)
     strategy_label = 'Bull Call Spread Payoff'
 elif strategy == "Bull Put Spread":
-    payoffs = 10 * calculate_bull_put_spread_payoff(asset_prices, strike_price_short_put, strike_price_long_put, premium_short_put, premium_long_put)
+    payoffs = 100 * calculate_bull_put_spread_payoff(asset_prices, strike_price_short_put, strike_price_long_put, premium_short_put, premium_long_put)
     strategy_label = 'Bull Put Spread Payoff'
 elif strategy == "Protective Collar": 
-    payoffs = 10 * calculate_protective_collar_payoff(asset_prices, purchase_price, strike_price_put, premium_put, strike_price_call, premium_call)
+    payoffs = 100 * calculate_protective_collar_payoff(asset_prices, purchase_price, strike_price_put, premium_put, strike_price_call, premium_call)
     strategy_label = 'Protective Collar Payoff'
 elif strategy == "Long Call Butterfly Spread":
-    payoffs = 10 * calculate_long_call_butterfly_payoff(asset_prices, strike_price_low, strike_price_mid, strike_price_high, premium_low, premium_mid, premium_high)
+    payoffs = 100 * calculate_long_call_butterfly_payoff(asset_prices, strike_price_low, strike_price_mid, strike_price_high, premium_low, premium_mid, premium_high)
     strategy_label = 'Long Call Butterfly Spread Payoff'
 elif strategy == "Iron Butterfly":
-    payoffs = 10 * calculate_iron_butterfly_payoff(asset_prices, strike_price_otm_put, premium_otm_put, strike_price_otm_call, premium_otm_call, premium_atm, strike_price_atm)
+    payoffs = 100 * calculate_iron_butterfly_payoff(asset_prices, strike_price_otm_put, premium_otm_put, strike_price_otm_call, premium_otm_call, premium_atm, strike_price_atm)
     strategy_label = 'Iron Butterfly Payoff'
 elif strategy == "Iron Condor":
     # Calculate payoffs for the Iron Condor strategy
-    payoffs = 10 * calculate_iron_condor_payoff(
+    payoffs = 100 * calculate_iron_condor_payoff(
         asset_prices,
         strike_price_put_buy,
         premium_put_buy,
@@ -308,25 +307,27 @@ elif strategy in ["Long Call Butterfly Spread", "Iron Butterfly"]:
     ax.fill_between(asset_prices, payoffs, 0, where=loss_indices, color='red', alpha=0.3)
 
 elif strategy == "Protective Collar":
+    # Calculate payoffs
     payoffs = calculate_protective_collar_payoff(asset_prices, purchase_price, strike_price_put, premium_put, strike_price_call, premium_call)
+
+# Strategy-specific annotations and markers
     strategy_label = 'Protective Collar Payoff'
-
-    # Calculate maximum profit and maximum loss
-    max_profit = strike_price_call - purchase_price + premium_call
-    max_loss = purchase_price - strike_price_put + premium_put
-
-    # Shading for profit (green) above the x-axis and loss (red) below the x-axis
-    ax.fill_between(asset_prices, payoffs, where=(payoffs > 0), color='green', alpha=0.3, interpolate=True)
+# Calculate maximum profit and maximum loss
+    max_profit = (strike_price_call - purchase_price) - (premium_put - premium_call)
+    max_loss = (purchase_price - strike_price_put) - (premium_put - premium_call)
+    
+    # Create plot
+    fig, ax = plt.subplots()
+    ax.plot(asset_prices, payoffs, label=strategy_label)
+    
+# Shading for profit and loss areas
+    ax.fill_between(asset_prices, payoffs, where=(payoffs >= 0), color='green', alpha=0.3, interpolate=True)
     ax.fill_between(asset_prices, payoffs, where=(payoffs < 0), color='red', alpha=0.3, interpolate=True)
-
-    # Max profit and loss lines
+    
+# Max profit and loss lines and annotations
     ax.axhline(y=max_profit, color='blue', linestyle='--', label=f'Max Profit: ${max_profit:.2f}')
-    ax.axhline(y=-max_loss, color='blue', linestyle='--', label=f'Max Loss: ${-max_loss:.2f}')
-
-    # Ensure the max loss line is below the x-axis
-    ax.axhline(0, color='grey', lw=1)  # Add the x-axis line
-    ax.text(asset_prices[-1], max_profit, f' Max Profit: ${max_profit}', verticalalignment='bottom')
-    ax.text(asset_prices[-1], -max_loss, f' Max Loss: ${-max_loss}', verticalalignment='top')
+    # The max loss should be plotted as a negative value because it represents a loss
+    ax.axhline(y=-max_loss, color='orange', linestyle='--', label=f'Max Loss: ${-max_loss:.2f}')
 
 elif strategy == "Straddle":
     # Calculate break-even points
