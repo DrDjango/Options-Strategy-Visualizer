@@ -140,9 +140,10 @@ selected_symbol = st.selectbox("Select Stock Symbol", symbols)
 
 if st.button("Fetch Data"):
     stock_data = get_stock_data(selected_symbol, API_KEY)
-    # Create a Plotly interactive line chart
-    fig = px.line(stock_data, x='Date', y=['Open', 'Close'], title='Stock Prices', labels={'value': 'Price (USD)', 'variable': 'Price Type'})
+    # Create a Plotly interactive line chart showing only the closing prices
+    fig = px.line(stock_data, x='Date', y='Close', title='Stock Closing Prices', labels={'Close': 'Closing Price (USD)'})
     st.plotly_chart(fig)
+
     # Process and display more data if necessary, like futures_data, iv_data, etc.
 
 # Strategy selection
