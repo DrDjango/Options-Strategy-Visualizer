@@ -336,6 +336,10 @@ elif strategy == "Protective Collar":
     ax.axhline(y=max_profit, color='blue', linestyle='--', label=f'Max Profit: ${max_profit:.2f}')
     # The max loss should be plotted as a negative value because it represents a loss
     ax.axhline(y=-max_loss, color='orange', linestyle='--', label=f'Max Loss: ${-max_loss:.2f}')
+    # Set axis labels and title
+    ax.set_xlabel('Stock Price (USD)')
+    ax.set_ylabel('Profit / Loss (USD)')
+    ax.set_title('Protective Collar Strategy Payoff')
 
 elif strategy == "Straddle":
     # Calculate break-even points
