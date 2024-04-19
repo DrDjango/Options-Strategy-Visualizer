@@ -293,14 +293,6 @@ elif strategy in ["Long Call Butterfly Spread", "Iron Butterfly", "Iron Condor"]
     ax.fill_between(asset_prices, payoffs, 0, where=~profit_indices, color='red', alpha=0.3)
     
     # For Iron Condor, max profit occurs between the short put and short call strike prices
-elif strategy == "Straddle":
-    asset_prices = np.linspace(max(0, strike_price - 50), strike_price + 50, 100)
-    call_payoff = calculate_call_payoff(asset_prices, strike_price, premium_call)
-    put_payoff = calculate_put_payoff(asset_prices, strike_price, premium_put)
-    straddle_payoff = call_payoff + put_payoff
-    ax.plot(asset_prices, straddle_payoff * 100, label='Straddle Payoff')
-    ax.fill_between(asset_prices, straddle_payoff * 100, 0, where=(straddle_payoff > 0), color='green', alpha=0.3, interpolate=True)
-    ax.fill_between(asset_prices, straddle_payoff * 100, 0, where=(straddle_payoff <= 0), color='red', alpha=0.3, interpolate=True)
 elif strategy == "Iron Condor":
         profit_range = (asset_prices > strike_price_put_sell) & (asset_prices < strike_price_call_sell)
         ax.fill_between(asset_prices, payoffs, 0, where=profit_range, color='green', alpha=0.3)
